@@ -58,7 +58,9 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'cart.context_processors.cart',                             # Nosso Context processor
+                
+                #Manter comentado
+                #'cart.context_processors.cart',                             # Nosso Context processor
             ],
         },
     },
