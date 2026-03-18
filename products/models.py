@@ -122,7 +122,20 @@ class ProductImage(models.Model):
         return os.path.basename(self.image.name) #isola o ultimo componente de um caminho, ignorando o diretorio
 
 
+class ProductVariant(models.Model):
+    #Para produtos com variações de tamanho, cor, etc
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='variants')
+    name = models.CharField('Nome da Variação', max_length=100) # Ex: "Tamanho M", "Cor Azul"
+    sku = models.CharField('SKU', max_length=50, unique=True)
+    price_adjustment = models.DecimalField('Ajuste de preço', max_digits=10, decimal_places=2, default=0)
+    stock = models.PositiveIntegerField('Estoque', default=0)
+    image = models.ImageField('Imagem da Variação', upload_to='variants/', blank=True, null=True)
 
+    class Meta:
+        verbose_name = 'Variação do Produto'
+        verbose_name_plural = 'Variações do Produto'
 
+    def __str__(self):
+        return f"{self.product.name} - {self.name}"
 
 
