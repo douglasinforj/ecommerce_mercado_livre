@@ -1,6 +1,7 @@
 from django.db import models
 from django.urls import reverse
 from ckeditor.fields import RichTextField     #armazenar textos ricos, ou seja, textos formatados com HTML
+import os
 
 
 class Category(models.Model):
@@ -95,6 +96,30 @@ class Product(models.Model):
             return round(discount)
         return 0
     
+
+class ProductImage(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='images')
+    image = models.ImageField('Imagem', upload_to='products/%Y/%m/')
+    alt_text = models.CharField('Texto alternativo', max_length=200, blank=True)
+    is_main = models.BooleanField('Principal', default=False)
+    order = models.PositiveIntegerField('Ordem', default=0)
+
+    class Meta:
+        verbose_name = 'Image do Produto'
+        verbose_name_plural = 'Imagens do Produto'
+        ordering = ['order']
+
+    def __str__(self):
+        return f"Image de {self.product.name}"
+    
+    def save(self, *args, **kwargs):
+        if self.is_main:
+            # Garantir que apenas uma imagem seja principal
+            ProductImage.objects.filter(product=self.product, is_main=True).update(is_main=False)
+        super().save(*args, **kwargs)
+
+    def filename(self):
+        return os.path.basename(self.image.name) #isola o ultimo componente de um caminho, ignorando o diretorio
 
 
 
