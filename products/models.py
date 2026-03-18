@@ -22,3 +22,19 @@ class Category(models.Model):
     def get_absolute_url(self):
         return reverse("products:category", args=[self.slug])
     
+
+
+class Brand(models.Model):
+    name = models.CharField('Nome', max_length=100)
+    slug = models.SlugField('Slug', unique=True)
+    logo = models.ImageField('Logo', upload_to='brands/', blank=True, null=True)
+    description = models.TextField('Descrição', blank=True)
+    is_active = models.BooleanField('Ativo', default=True)
+
+    class Meta:
+        verbose_name = 'Marca'
+        verbose_name_plural = 'Marcas'
+
+    def __str__(self):
+        return self.name
+
