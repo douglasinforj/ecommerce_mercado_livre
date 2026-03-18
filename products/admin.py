@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Category
+from .models import Category, Brand
 
 
 
@@ -23,6 +23,12 @@ class CategoryAdmin(admin.ModelAdmin):
             'classes': ('collapse',)
         }),
     )
+
+@admin.register(Brand)
+class BrandAdmin(admin.ModelAdmin):
+    list_display = ['name', 'slug', 'is_active']
+    prepopulated_fields = {'slug': ('name',)}
+
 
 
 
