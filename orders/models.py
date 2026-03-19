@@ -3,6 +3,7 @@ from django.db import models
 from django.contrib.auth import get_user_model
 
 from cart.models import Cart
+from products.models import Product
 
 User = get_user_model()
 
@@ -75,5 +76,19 @@ class Order(models.Model):
                 self.order_number = "ORD000001"
         super().save(*args, **kwargs)
 
+class OrderItem(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items')
+    product = models.ForeignKey(Product, on_delete=models.PROTECT)
+    product_name = models.CharField('Nome do produto', max_length=200)
+    product_sku = models.CharField('SKU', max_length=50)
+    quantity = models.PositiveIntegerField('Quantidade')
+    price = models.DecimalField('Preço unitário', max_digits=10, decimal_places=2)
+    total = models.DecimalField('Total', max_digits=10, decimal_places=2)
 
+    class Meta:
+        verbose_name = 'Item do Pedido'
+        verbose_name_plural = 'Itens do Pedido'
+
+    def __str__(self):
+        return f"{self.quantity}x {self.product_name}"
 
