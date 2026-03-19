@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 
 from .models import Product, Category
 
@@ -44,6 +44,28 @@ def product_list(request):
         'categories': categories,
     }
     return render(request, 'products/product_list.html', context)
+
+
+def product_detail(request, slug):
+    """Detalhes do produto"""
+    product = get_object_or_404(Product, slug=slug, is_available=True)
+    
+    # Incrementar contador de visualizações
+    product.views_count += 1
+    product.save(update_fields=['views_count'])
+    
+    # Produtos relacionados (mesma categoria)
+    related_products = Product.objects.filter(
+        category=product.category, 
+        is_available=True
+    ).exclude(id=product.id)[:4]
+    
+    context = {
+        'product': product,
+        'related_products': related_products,
+    }
+    return render(request, 'products/product_detail.html', context)
+
 
 
 
