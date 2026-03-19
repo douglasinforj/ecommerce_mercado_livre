@@ -67,6 +67,21 @@ def product_detail(request, slug):
     return render(request, 'products/product_detail.html', context)
 
 
+def category_products(request, slug):
+    """Produtos por categoria"""
+    category = get_object_or_404(Category, slug=slug, is_active=True)
+    products = Product.objects.filter(category=category, is_available=True)
+    
+    # Paginação
+    paginator = Paginator(products, 12)
+    page = request.GET.get('page')
+    products = paginator.get_page(page)
+    
+    context = {
+        'category': category,
+        'products': products,
+    }
+    return render(request, 'products/category_products.html', context)
 
 
 
