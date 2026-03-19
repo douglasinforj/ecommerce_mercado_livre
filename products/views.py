@@ -5,6 +5,8 @@ from .models import Product, Category
 from .filters import ProductFilter
 from django.core.paginator import Paginator
 
+from django.db.models import Q, Count
+
 
 
 def home(request):
@@ -84,6 +86,32 @@ def category_products(request, slug):
     return render(request, 'products/category_products.html', context)
 
 
-
+def search(request):
+    """Busca de produtos"""
+    query = request.GET.get('q', '')
+    
+    if query:
+        products = Product.objects.filter(
+            Q(name__icontains=query) |
+            Q(short_description__icontains=query) |
+            Q(full_description__icontains=query) |
+            Q(category__name__icontains=query) |
+            Q(sku__icontains=query),
+            is_available=True
+        ).distinct()
+    else:
+        products = Product.objects.none()
+    
+    # Paginação
+    paginator = Paginator(products, 12)
+    page = request.GET.get('page')
+    products = paginator.get_page(page)
+    
+    context = {
+        'products': products,
+        'query': query,
+        'total_results': products.paginator.count if products else 0,
+    }
+    return render(request, 'products/search.html', context)
 
     
